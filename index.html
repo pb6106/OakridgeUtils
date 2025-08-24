@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oakridge Utils by prodigyboy6106</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .checkbox-custom.checked {
+            background-color: #16a34a;
+            border-color: #16a34a;
+        }
+        .checkbox-custom.checked .checkmark {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-700">
+        <h1 class="text-2xl font-bold text-white mb-6 text-center">Oakridge Utils</h1>
+        
+        <div class="space-y-4">
+            <!-- Input Field -->
+            <div>
+                <label class="block text-gray-300 text-sm font-medium mb-2">Auto Bypass Calculator:</label>
+                <input 
+                    type="number" 
+                    id="numberInput" 
+                    placeholder="Enter the grid demand."
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+            </div>
+            
+
+            
+            <!-- Result Display -->
+            <div class="bg-gradient-to-r from-green-600 to-lime-500 rounded-lg p-6 text-center">
+                <div class="text-gray-800 text-sm font-medium mb-1">Result:</div>
+                <div class="text-gray-800 text-3xl font-bold" id="result">--</div>
+            </div>
+            
+            <!-- History Chart with Dropdown -->
+            <div class="bg-gray-700 rounded-lg border border-gray-600">
+                <button 
+                    id="historyDropdownBtn"
+                    class="w-full flex items-center justify-between p-4 text-white hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                    <h3 class="text-lg font-semibold">Previous Calculations</h3>
+                    <svg class="w-5 h-5 transform transition-transform" id="historyDropdownArrow" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <div id="historyContent" class="px-4 pb-4 transition-all duration-200">
+                    <div id="historyList" class="space-y-2 max-h-48 overflow-y-auto">
+                        <div class="text-gray-400 text-sm text-center py-4">No calculations yet</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu Buttons -->
+            <div class="space-y-3">
+                <button 
+                    id="patternsBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                    Patterns
+                </button>
+                <button 
+                    id="checklistsBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                    Checklists
+                </button>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- Patterns Popup Overlay -->
+    <div id="patternsOverlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div id="patternsModal" class="bg-gray-800 rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-auto border border-gray-700 transform scale-75 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">Patterns</h2>
+                <button id="closePatterns" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <img src="https://i.imgur.com/Mt7UWa6.png" alt="Patterns" class="w-full h-auto rounded-lg" onerror="this.src=''; this.alt='Image failed to load'; this.style.display='none';">
+        </div>
+    </div>
+
+    <!-- Checklists Popup Overlay -->
+    <div id="checklistsOverlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div id="checklistsModal" class="bg-gray-800 rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-700 transform scale-75 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-white">Checklists</h2>
+                <button id="closeChecklists" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-3">
+                <button id="preStartBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    Pre-Start
+                </button>
+                <button id="startupBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    Startup
+                </button>
+                <button id="shutdownBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    Shutdown
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const numberInput = document.getElementById('numberInput');
+        const result = document.getElementById('result');
+        const historyList = document.getElementById('historyList');
+        let calculationHistory = [];
+
+        // Load history from localStorage on page load
+        function loadHistory() {
+            const savedHistory = localStorage.getItem('oakridgeCalculatorHistory');
+            if (savedHistory) {
+                calculationHistory = JSON.parse(savedHistory);
+                updateHistoryDisplay();
+            }
+        }
+
+        // Save history to localStorage
+        function saveHistory() {
+            localStorage.setItem('oakridgeCalculatorHistory', JSON.stringify(calculationHistory));
+        }
+
+        function calculate() {
+            const inputValue = parseFloat(numberInput.value);
+            
+            if (isNaN(inputValue) || numberInput.value === '') {
+                result.textContent = '--';
+                return;
+            }
+            
+            const finalResult = Math.round((inputValue / 2) + 12);
+            result.textContent = finalResult;
+            
+            // Add to history if it's a new calculation and within range (500-1500)
+            if (inputValue >= 500 && inputValue <= 1500) {
+                const historyEntry = `${inputValue} MW -> ${finalResult}`;
+                if (!calculationHistory.includes(historyEntry)) {
+                    calculationHistory.unshift(historyEntry); // Add to beginning
+                    if (calculationHistory.length > 10) {
+                        calculationHistory.pop(); // Keep only last 10
+                    }
+                    updateHistoryDisplay();
+                    saveHistory(); // Save to localStorage
+                }
+            }
+        }
+
+        function updateHistoryDisplay() {
+            if (calculationHistory.length === 0) {
+                historyList.innerHTML = '<div class="text-gray-400 text-sm text-center py-4">No calculations yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = calculationHistory.map(entry => 
+                `<div class="bg-gray-600 rounded px-3 py-2 text-white text-sm font-medium">${entry}</div>`
+            ).join('');
+        }
+
+        // Load saved history when page loads
+        loadHistory();
+
+        // Calculate as user types
+        numberInput.addEventListener('input', calculate);
+        
+        // Focus on input when page loads
+        numberInput.focus();
+
+        // History dropdown functionality
+        const historyDropdownBtn = document.getElementById('historyDropdownBtn');
+        const historyContent = document.getElementById('historyContent');
+        const historyDropdownArrow = document.getElementById('historyDropdownArrow');
+        let historyDropdownOpen = true; // Start open by default
+
+        function toggleHistoryDropdown() {
+            historyDropdownOpen = !historyDropdownOpen;
+            if (historyDropdownOpen) {
+                historyContent.style.maxHeight = historyContent.scrollHeight + 'px';
+                historyContent.style.opacity = '1';
+                historyContent.style.pointerEvents = 'auto';
+                historyDropdownArrow.classList.add('rotate-180');
+            } else {
+                historyContent.style.maxHeight = '0px';
+                historyContent.style.opacity = '0';
+                historyContent.style.pointerEvents = 'none';
+                historyDropdownArrow.classList.remove('rotate-180');
+            }
+        }
+
+        // Initialize history dropdown as open
+        historyContent.style.maxHeight = historyContent.scrollHeight + 'px';
+        historyDropdownArrow.classList.add('rotate-180');
+
+        historyDropdownBtn.addEventListener('click', toggleHistoryDropdown);
+
+        // Patterns popup functionality
+        const patternsBtn = document.getElementById('patternsBtn');
+        const patternsOverlay = document.getElementById('patternsOverlay');
+        const patternsModal = document.getElementById('patternsModal');
+        const closePatterns = document.getElementById('closePatterns');
+
+        function showPatterns() {
+            patternsOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            patternsOverlay.classList.add('opacity-100');
+            setTimeout(() => {
+                patternsModal.classList.remove('scale-75');
+                patternsModal.classList.add('scale-100');
+            }, 50);
+        }
+
+        function hidePatterns() {
+            patternsModal.classList.remove('scale-100');
+            patternsModal.classList.add('scale-75');
+            setTimeout(() => {
+                patternsOverlay.classList.remove('opacity-100');
+                patternsOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }, 200);
+        }
+
+        patternsBtn.addEventListener('click', showPatterns);
+        closePatterns.addEventListener('click', hidePatterns);
+        
+        // Close popup when clicking outside the modal
+        patternsOverlay.addEventListener('click', function(e) {
+            if (e.target === patternsOverlay) {
+                hidePatterns();
+            }
+        });
+
+        // Checklists popup functionality
+        const checklistsBtn = document.getElementById('checklistsBtn');
+        const checklistsOverlay = document.getElementById('checklistsOverlay');
+        const checklistsModal = document.getElementById('checklistsModal');
+        const closeChecklists = document.getElementById('closeChecklists');
+
+        function showChecklists() {
+            checklistsOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            checklistsOverlay.classList.add('opacity-100');
+            setTimeout(() => {
+                checklistsModal.classList.remove('scale-75');
+                checklistsModal.classList.add('scale-100');
+            }, 50);
+        }
+
+        function hideChecklists() {
+            checklistsModal.classList.remove('scale-100');
+            checklistsModal.classList.add('scale-75');
+            setTimeout(() => {
+                checklistsOverlay.classList.remove('opacity-100');
+                checklistsOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }, 200);
+        }
+
+        checklistsBtn.addEventListener('click', showChecklists);
+        closeChecklists.addEventListener('click', hideChecklists);
+        
+        // Close popup when clicking outside the modal
+        checklistsOverlay.addEventListener('click', function(e) {
+            if (e.target === checklistsOverlay) {
+                hideChecklists();
+            }
+        });
+
+        // Checklist data
+        const checklists = {
+            preStart: {
+                title: "Pre-Start Checklist",
+                sections: [
+                    {
+                        title: "1. Condenser Coolant Pumps",
+                        items: [
+                            "Condenser Coolant Pump A1 – Enabled",
+                            "Condenser Coolant Pump A2 – Enabled",
+                            "A1 Speed – 2",
+                            "A2 Speed – 2"
+                        ]
+                    },
+                    {
+                        title: "2. Turbine Settings",
+                        items: [
+                            "Turbine A-B Bleed Valve – Open",
+                            "Turbine A Bypass Valve – Enabled",
+                            "Turbine A Bypass – 100% (adjust knob)"
+                        ]
+                    },
+                    {
+                        title: "3. Deaerator Settings",
+                        items: [
+                            "A-B Bleed Valve – Closed",
+                            "Relief Valve – 50%",
+                            "Steam Inlet Valve – 25%"
+                        ]
+                    },
+                    {
+                        title: "4. Main Circulation Pumps",
+                        items: [
+                            "Pump A1 Speed – 2",
+                            "Pump A2 Speed – 2"
+                        ]
+                    },
+                    {
+                        title: "5. Reactor Isolation Valves",
+                        items: [
+                            "Inlet 1 & 2 – Open",
+                            "Outlet 1 & 2 – Open"
+                        ]
+                    },
+                    {
+                        title: "6. ECCS Injection Tanks",
+                        items: [
+                            "Pressure – ≥ 1500 PSI (toggle Nitrogen valve to fill)"
+                        ]
+                    },
+                    {
+                        title: "7. Hotwell Control",
+                        items: [
+                            "Automatic Level – 35 (numpad + grey button)",
+                            "Limiter Valve – Enabled"
+                        ]
+                    },
+                    {
+                        title: "8. Electrical Panel",
+                        items: [
+                            "Breaker 18M-G1 – On",
+                            "Breaker 64B-M – On (key in orange box near Control Room entrance)",
+                            "Automatic G1 Offload – Disabled",
+                            "G1<64A Offload System – Primed"
+                        ]
+                    },
+                    {
+                        title: "9. Feed Limiter Valve",
+                        items: [
+                            "Valve – Enabled (next to feedwater pumps)"
+                        ]
+                    }
+                ]
+            },
+            startup: {
+                title: "Startup Checklist",
+                sections: [
+                    {
+                        title: "Initial Setup",
+                        items: [
+                            "Grab a bypass key from the key cabinet at the door of the Control Room",
+                            "Insert the key into the Autoscram panel and disable Autoscram",
+                            "Enable Reactor Mode 1",
+                            "Close Heat Exchanger A and B",
+                            "Disable OCC Circulation Pumps 1 and 2",
+                            "Mode Conflict alarm will flash, press the acknowledge button on the Middle Reactor Console",
+                            "Enable Shutdown Control Rods",
+                            "Click the Reset button next to the acknowledge button on the Middle Reactor Console",
+                            "Wait for the Out of Zone panel to flash, a bell will ring signalling the Shutdown Rods are fully removed",
+                            "Enable Auto Control Rods",
+                            "Type the numbers 1500 into the keypad next to the Auto Control Rods switch and click the grey button to set",
+                            "Once the reactor reaches 1500 MW enable Reactor Mode 2. Keep an eye on the Core Heat Distribution",
+                            "Enable Feedwater Pump 1 and set it to speed 2",
+                            "Enable Condensate Pump 1 and set it to speed 2"
+                        ]
+                    },
+                    {
+                        title: "Stage Two Startup",
+                        items: [
+                            "Withdraw Control Rods until power reaches 2100 MW"
+                        ]
+                    },
+                    {
+                        title: "Turbine A Runup",
+                        items: [
+                            "Call Engineering, click Turning gear, and disengage Turbine A",
+                            "At the Turbine Panel enable the Synchronoscope for Turbine A",
+                            "Reduce Turbine A bypass valve to around 20-30% at the Turbine Panel",
+                            "Slowly increase the Turbine Valve to around 60-70%",
+                            "The RPM should start rising, it should add 30 to the RPM every time it updates",
+                            "Open the Grid Sync cap",
+                            "Once the RPM reaches around +1775 RPM the Synchronoscope will flash and make an audible sound when the needle passes over the black zone at the top of the gauge",
+                            "Once the needle slows down and the RPM is around 1800, wait for the green light to light up and then click Grid Sync",
+                            "If you synced it correctly the RPM will stabilize at 1800"
+                        ]
+                    },
+                    {
+                        title: "If Sync is Unsuccessful",
+                        items: [
+                            "Click the Acknowledge button, the corresponding one to silence the Turbine Trip Alarm will be glowing",
+                            "Wait for the RPM to drop below 600",
+                            "Click the reset button next to the Acknowledge button you just pressed",
+                            "Retry the Turbine Sync Process"
+                        ]
+                    },
+                    {
+                        title: "If Sync is Successful",
+                        items: [
+                            "Acknowledge the Reverse Power alert",
+                            "Increase the Turbine Valve SLOWLY to 100%",
+                            "Decrease the Bypass valve to 0%",
+                            "Once the generator load is positive click the Reset button next to the Acknowledge button",
+                            "Enable Breaker 64 A-M",
+                            "Call Engineering and click Reset Breakers",
+                            "Set both Deaerator A and B Relief Valves to 25%",
+                            "Set both Deaerator A and B Inlet Valves to 45%",
+                            "Enable Condensate Pump 2",
+                            "Enable Feedwater Pump 2",
+                            "Open Deaerator A-B Bleed Valve"
+                        ]
+                    },
+                    {
+                        title: "Stage Three Startup",
+                        items: [
+                            "Set Main Circulation Pumps A1 and A2 to speed 3",
+                            "Enable Main Circulation Pump B1 and B2",
+                            "Set Condenser Coolant Pumps A1 and A2 to speed 3",
+                            "Type the numbers 3000 into the Auto Control Rod panel and click the grey button",
+                            "Withdraw Control rods until power reaches 3000 MW, Keep an eye on Core Heat Distribution",
+                            "Enable Condenser Coolant Pumps B1 and B2 and set to speed 3"
+                        ]
+                    },
+                    {
+                        title: "Turbine B Runup",
+                        items: [
+                            "Call Engineering, click Turning gear, and disengage Turbine B",
+                            "At the Turbine Panel enable the Synchronoscope for Turbine B",
+                            "Reduce Turbine B bypass valve to around 20-30% at the Turbine Panel",
+                            "Slowly increase the Turbine Valve to around 60-70%",
+                            "The RPM should start rising, it should add 30 to the RPM every time it updates",
+                            "Open the Grid Sync cap",
+                            "Once the RPM reaches around +1775 RPM the Synchronoscope will flash and make an audible sound when the needle passes over the black zone at the top of the gauge",
+                            "Once the needle slows down and the RPM is around 1800, wait for the green light to light up and then click Grid Sync",
+                            "If you synced it correctly the RPM will stabilize at 1800"
+                        ]
+                    },
+                    {
+                        title: "If Turbine B Sync is Unsuccessful",
+                        items: [
+                            "Click the Acknowledge button, the corresponding one to silence the Turbine Trip Alarm will be glowing",
+                            "Wait for the RPM to drop below 600",
+                            "Click the reset button next to the Acknowledge button you just pressed",
+                            "Retry the Turbine Sync Process"
+                        ]
+                    },
+                    {
+                        title: "If Turbine B Sync is Successful",
+                        items: [
+                            "Acknowledge the Reverse Power alert",
+                            "Increase the Turbine Valve SLOWLY to 100%",
+                            "Decrease the Bypass valve to 0%",
+                            "Once the generator load is positive click the Reset button next to the Acknowledge button",
+                            "Enable Feedwater Pump 2 to speed 2",
+                            "Enable Condensate Pump 2 to speed 2"
+                        ]
+                    },
+                    {
+                        title: "Stage Four Startup",
+                        items: [
+                            "Type into the Auto Control Rods keypad 4000 MW",
+                            "Set Main Circulation Pumps B1 and B2 to speed 3",
+                            "Enable Condenser Coolant Pumps A3 and B3",
+                            "Call the Grid Controller and click Go Online",
+                            "Enable Bypass valves A and B",
+                            "Enable Auto Bypass Valves A and B"
+                        ]
+                    },
+                    {
+                        title: "Low Power Range [4000MW - 4200MW]",
+                        items: [
+                            "Enable Main Circulation Pumps C1 and C2"
+                        ]
+                    },
+                    {
+                        title: "Medium Power Range [4200MW - 4500MW]",
+                        items: [
+                            "Enable Main Circulation Pumps C1 and C2 and set to speed 2",
+                            "Set Condenser Coolant Pumps A3 and B3 to speed 2",
+                            "Set Condenser 1 or Feedwater 1 to speed 3"
+                        ]
+                    },
+                    {
+                        title: "High Power Range [4500MW - 4800MW]",
+                        items: [
+                            "Enable Main Circulation Pumps C1 and C2 and set to speed 3",
+                            "Set Condenser Coolant Pumps A3 and B3 to speed 3"
+                        ]
+                    }
+                ]
+            },
+            shutdown: {
+                title: "Shutdown Checklist",
+                sections: [
+                    {
+                        title: "Initial Shutdown",
+                        items: [
+                            "Call the Grid Controller and click Go Offline"
+                        ]
+                    },
+                    {
+                        title: "Stage One - Reduce Reactor Power",
+                        items: [
+                            "Go to the Center Reactor panel and type the numbers 3400 into the Auto Control Rods keypad and click the grey button to set",
+                            "Insert control rods in a symmetrical pattern, the selection of control rods is not limited to 12 whilst inserting rods",
+                            "Watch the water temperature, if it goes lower than 400 lower one Main Circulation Pump to its lowest setting on both sides",
+                            "Do not reduce power too quickly, take time with the reduction of power as it could result in a turbine trip"
+                        ]
+                    },
+                    {
+                        title: "Deaerator Configuration",
+                        items: [
+                            "Disable Deaerator Auto Control",
+                            "Set Deaerator Inlets, both A and B, to 0%",
+                            "Set Deaerator Outlets, both A and B, to 50%"
+                        ]
+                    },
+                    {
+                        title: "Prepare TURBINE B For Rundown",
+                        items: [
+                            "Close Turbine A-B Bleed Valve",
+                            "Enable the Bypass Valve for Turbine B",
+                            "Set the Automatic Bypass for Turbine B to 50",
+                            "Set the Bypass Valve of Turbine B to 60%"
+                        ]
+                    },
+                    {
+                        title: "Stage 2 - Rundown Turbine B",
+                        items: [
+                            "Set Automatic Bypass for Turbine B to 0",
+                            "Wait for the Generator Output of Turbine B to decrease Below 10 MW",
+                            "Go to the Plant Circuit Panel and Disable Generator B",
+                            "Disable the Auto Bypass Valve for Turbine B",
+                            "Decrease Turbine B Turbine Valve to 0%",
+                            "Decrease Turbine B Bypass Valve to 0%",
+                            "When pressure in both steam lines is identical, open Turbine A-B Bleed Valve"
+                        ]
+                    },
+                    {
+                        title: "Shutdown Unnecessary Sub Systems",
+                        items: [
+                            "Disable Condenser Coolant Pumps B1, B2, B3, B4, and A3, A4",
+                            "Disable Feedwater Pump 2",
+                            "Disable Condensate Pump 2"
+                        ]
+                    },
+                    {
+                        title: "Lower Reactor Thermal [2100 MW]",
+                        items: [
+                            "Enter the numbers 2100 into the Auto Control Rods Keypad and click the grey button to set",
+                            "Reduce Main Circulation Pumps A2 and A1 to speed 2",
+                            "Insert control rods",
+                            "Keep an eye on Turbine A generator output. DO NOT LET IT DROP BELOW 100MW"
+                        ]
+                    },
+                    {
+                        title: "Stage 3 - Call Grid Controller",
+                        items: [
+                            "Call the Grid Controller and click the Clearance Button"
+                        ]
+                    },
+                    {
+                        title: "Plant Startup Transformer",
+                        items: [
+                            "Ensure plant power usage does not exceed the maximum load of 30MW",
+                            "Prime G1<64A if not already primed",
+                            "Press the G1<64A Button",
+                            "Ensure 64B-M breaker trips, if not automatically disabled, disable"
+                        ]
+                    },
+                    {
+                        title: "Rundown Turbine A",
+                        items: [
+                            "Enable Turbine A Bypass Valve",
+                            "Set Automatic Bypass of Turbine A to 0",
+                            "Wait for Turbine Generator A output is Below 10 MW",
+                            "Go to the Plant Circuit Panel and disable Generator A",
+                            "Disable Turbine A Automatic Bypass Valve",
+                            "Reduce the Turbine Valve of Turbine A to 0%",
+                            "Set Bypass Valve of Turbine A to 100%"
+                        ]
+                    },
+                    {
+                        title: "Initiate Reactor Soft Scram",
+                        items: [
+                            "Set Reactor Mode to 0",
+                            "Acknowledge Mode Conflict",
+                            "Set Main Circulation Pumps A1 and A2 to speed 1",
+                            "Disable Shutdown Control Rods"
+                        ]
+                    },
+                    {
+                        title: "Offline Core Cooling",
+                        items: [
+                            "Enable OCC Circulation Pumps 1 and 2",
+                            "Enable Heat Exchanger Valves A and B",
+                            "Click the Reset button next to the Acknowledge button"
+                        ]
+                    },
+                    {
+                        title: "Stage 4 - Feedwater and Condensate",
+                        items: [
+                            "Wait for Reactor water temperature to fall below 220",
+                            "Disable Condensate Pump 1",
+                            "Disable Feedwater Pump 1"
+                        ]
+                    },
+                    {
+                        title: "Turbine Turning Gear",
+                        items: [
+                            "Call Engineering and Click Turning gear, Enable Turbine B Turning Gear",
+                            "Put the phone back and pick it back up and call Engineering again and enable Turbine A Turning Gear"
+                        ]
+                    },
+                    {
+                        title: "Disable Main Transformer",
+                        items: [
+                            "Disable 18M-G1 Breaker"
+                        ]
+                    },
+                    {
+                        title: "Remaining Systems",
+                        items: [
+                            "Disable all Condenser Coolant Pumps",
+                            "Close Turbine and Bypass Valves",
+                            "Disable Automatic Feed Limiter",
+                            "Disable Automatic Hotwell Limiter",
+                            "Disable Automatic Control rods",
+                            "Close Reactor Isolation Valves"
+                        ]
+                    },
+                    {
+                        title: "Purge Remaining Steam",
+                        items: [
+                            "Using Pressure Relief valves 5 and 7 remove any remaining steam until the steam lines A and B are below 50 PSI"
+                        ]
+                    },
+                    {
+                        title: "Request Inspection",
+                        items: [
+                            "Ensure all rods are inserted and the OCC is functional",
+                            "Call Engineering and click Inspection"
+                        ]
+                    }
+                ]
+            }
+        };
+
+        let currentChecklist = null;
+        let checklistProgress = {};
+
+        // Load checklist progress from localStorage
+        function loadChecklistProgress() {
+            const saved = localStorage.getItem('oakridgeChecklistProgress');
+            if (saved) {
+                checklistProgress = JSON.parse(saved);
+            }
+        }
+
+        // Save checklist progress to localStorage
+        function saveChecklistProgress() {
+            localStorage.setItem('oakridgeChecklistProgress', JSON.stringify(checklistProgress));
+        }
+
+        function showChecklistModal(checklistType) {
+            currentChecklist = checklistType;
+            const checklist = checklists[checklistType];
+            
+            // Create modal content
+            const modalContent = `
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center space-x-3">
+                        <button id="backToChecklists" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <h2 class="text-xl font-bold text-white">${checklist.title}</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-300">
+                            <span id="progressText">0 / 0</span> completed
+                        </div>
+                        <button id="closeChecklistModal" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+                    </div>
+                </div>
+                <div class="space-y-4 max-h-[70vh] overflow-y-auto" id="checklistContent">
+                    ${checklist.sections.map((section, sectionIndex) => `
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-white mb-3">${section.title}</h3>
+                            <div class="space-y-2">
+                                ${section.items.map((item, itemIndex) => {
+                                    const itemId = `${checklistType}_${sectionIndex}_${itemIndex}`;
+                                    const isChecked = checklistProgress[itemId] || false;
+                                    return `
+                                        <label class="flex items-start space-x-3 cursor-pointer group" data-checkbox-id="${itemId}">
+                                            <div class="relative mt-1">
+                                                <input type="checkbox" 
+                                                       id="${itemId}" 
+                                                       class="sr-only" 
+                                                       ${isChecked ? 'checked' : ''}>
+                                                <div class="w-5 h-5 bg-gray-600 border-2 border-gray-500 rounded-full flex items-center justify-center transition-all duration-200 group-hover:border-gray-400 checkbox-custom ${isChecked ? 'checked' : ''}">
+                                                    <svg class="w-3 h-3 text-white transition-opacity duration-200 checkmark ${isChecked ? 'opacity-100' : 'opacity-0'}" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span class="text-sm text-gray-300 group-hover:text-white transition-colors">${item}</span>
+                                        </label>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-6 flex justify-between items-center">
+                    <button id="resetChecklist" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Reset Progress
+                    </button>
+                    <div class="bg-gray-700 rounded-lg px-4 py-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-32 bg-gray-600 rounded-full h-2">
+                                <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <span id="progressPercent" class="text-sm text-gray-300">0%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update the modal
+            const modal = document.getElementById('checklistsModal');
+            modal.innerHTML = modalContent;
+            modal.classList.remove('max-w-md');
+            modal.classList.add('max-w-4xl');
+
+            // Show the modal
+            showChecklists();
+
+            // Add event listeners
+            document.getElementById('closeChecklistModal').addEventListener('click', hideChecklists);
+            document.getElementById('backToChecklists').addEventListener('click', () => {
+                // Reset modal to original state
+                modal.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-white">Checklists</h2>
+                        <button id="closeChecklists" class="text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+                    </div>
+                    <div class="space-y-3">
+                        <button id="preStartBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Pre-Start
+                        </button>
+                        <button id="startupBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Startup
+                        </button>
+                        <button id="shutdownBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Shutdown
+                        </button>
+                    </div>
+                `;
+                modal.classList.remove('max-w-4xl');
+                modal.classList.add('max-w-md');
+                currentChecklist = null;
+                
+                // Re-add event listeners for the main checklist buttons
+                document.getElementById('closeChecklists').addEventListener('click', hideChecklists);
+                document.getElementById('preStartBtn').addEventListener('click', () => showChecklistModal('preStart'));
+                document.getElementById('startupBtn').addEventListener('click', () => showChecklistModal('startup'));
+                document.getElementById('shutdownBtn').addEventListener('click', () => showChecklistModal('shutdown'));
+            });
+            document.getElementById('resetChecklist').addEventListener('click', () => resetChecklistProgress(checklistType));
+
+            // Add checkbox event listeners
+            const labels = modal.querySelectorAll('label[data-checkbox-id]');
+            labels.forEach(label => {
+                const checkboxId = label.getAttribute('data-checkbox-id');
+                const checkbox = document.getElementById(checkboxId);
+                const customCheckbox = label.querySelector('.checkbox-custom');
+                const checkmark = label.querySelector('.checkmark');
+                const textSpan = label.querySelector('span');
+                
+                label.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Toggle checkbox state
+                    checkbox.checked = !checkbox.checked;
+                    checklistProgress[checkboxId] = checkbox.checked;
+                    saveChecklistProgress();
+                    
+                    // Update visual appearance
+                    if (checkbox.checked) {
+                        customCheckbox.classList.add('checked');
+                        checkmark.classList.remove('opacity-0');
+                        checkmark.classList.add('opacity-100');
+                    } else {
+                        customCheckbox.classList.remove('checked');
+                        checkmark.classList.remove('opacity-100');
+                        checkmark.classList.add('opacity-0');
+                    }
+                    
+                    updateProgress();
+                });
+            });
+
+            updateProgress();
+        }
+
+        function updateCheckboxAppearance(checkbox) {
+            const label = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                label.classList.add('line-through', 'opacity-75');
+            } else {
+                label.classList.remove('line-through', 'opacity-75');
+            }
+        }
+
+        function updateProgress() {
+            if (!currentChecklist) return;
+
+            const checklist = checklists[currentChecklist];
+            let totalItems = 0;
+            let completedItems = 0;
+
+            checklist.sections.forEach((section, sectionIndex) => {
+                section.items.forEach((item, itemIndex) => {
+                    totalItems++;
+                    const itemId = `${currentChecklist}_${sectionIndex}_${itemIndex}`;
+                    if (checklistProgress[itemId]) {
+                        completedItems++;
+                    }
+                });
+            });
+
+            const percentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+            document.getElementById('progressText').textContent = `${completedItems} / ${totalItems}`;
+            document.getElementById('progressPercent').textContent = `${percentage}%`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        function resetChecklistProgress(checklistType) {
+            if (confirm('Are you sure you want to reset all progress for this checklist?')) {
+                // Remove all progress for this checklist
+                Object.keys(checklistProgress).forEach(key => {
+                    if (key.startsWith(checklistType + '_')) {
+                        delete checklistProgress[key];
+                    }
+                });
+                saveChecklistProgress();
+                
+                // Uncheck all checkboxes and update appearance
+                const labels = document.querySelectorAll(`label[data-checkbox-id^="${checklistType}_"]`);
+                labels.forEach(label => {
+                    const checkboxId = label.getAttribute('data-checkbox-id');
+                    const checkbox = document.getElementById(checkboxId);
+                    const customCheckbox = label.querySelector('.checkbox-custom');
+                    const checkmark = label.querySelector('.checkmark');
+                    const textSpan = label.querySelector('span');
+                    
+                    checkbox.checked = false;
+                    customCheckbox.classList.remove('checked');
+                    checkmark.classList.remove('opacity-100');
+                    checkmark.classList.add('opacity-0');
+                });
+                
+                updateProgress();
+            }
+        }
+
+        // Load saved progress on page load
+        loadChecklistProgress();
+
+        // Checklist button event listeners
+        const preStartBtn = document.getElementById('preStartBtn');
+        const startupBtn = document.getElementById('startupBtn');
+        const shutdownBtn = document.getElementById('shutdownBtn');
+
+        preStartBtn.addEventListener('click', () => showChecklistModal('preStart'));
+        startupBtn.addEventListener('click', () => showChecklistModal('startup'));
+        shutdownBtn.addEventListener('click', () => showChecklistModal('shutdown'));
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'973763cb61f0e651',t:'MTc1NTkxODM0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974608b9e6c6e759',t:'MTc1NjA3MTg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
