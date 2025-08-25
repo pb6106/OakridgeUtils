@@ -42,24 +42,6 @@
                 <div class="text-gray-800 text-3xl font-bold" id="result">--</div>
             </div>
             
-            <!-- History Chart with Dropdown -->
-            <div class="bg-gray-700 rounded-lg border border-gray-600">
-                <button 
-                    id="historyDropdownBtn"
-                    class="w-full flex items-center justify-between p-4 text-white hover:bg-gray-600 rounded-lg transition-colors"
-                >
-                    <h3 class="text-lg font-semibold">Previous Calculations</h3>
-                    <svg class="w-5 h-5 transform transition-transform" id="historyDropdownArrow" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-                <div id="historyContent" class="px-4 pb-4 transition-all duration-200">
-                    <div id="historyList" class="space-y-2 max-h-48 overflow-y-auto">
-                        <div class="text-gray-400 text-sm text-center py-4">No calculations yet</div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Menu Buttons -->
             <div class="space-y-3">
                 <button 
@@ -115,22 +97,6 @@
     <script>
         const numberInput = document.getElementById('numberInput');
         const result = document.getElementById('result');
-        const historyList = document.getElementById('historyList');
-        let calculationHistory = [];
-
-        // Load history from localStorage on page load
-        function loadHistory() {
-            const savedHistory = localStorage.getItem('oakridgeCalculatorHistory');
-            if (savedHistory) {
-                calculationHistory = JSON.parse(savedHistory);
-                updateHistoryDisplay();
-            }
-        }
-
-        // Save history to localStorage
-        function saveHistory() {
-            localStorage.setItem('oakridgeCalculatorHistory', JSON.stringify(calculationHistory));
-        }
 
         function calculate() {
             const inputValue = parseFloat(numberInput.value);
@@ -142,67 +108,14 @@
             
             const finalResult = Math.round((inputValue / 2) + 12);
             result.textContent = finalResult;
-            
-            // Add to history if it's a new calculation and within range (500-1500)
-            if (inputValue >= 500 && inputValue <= 1500) {
-                const historyEntry = `${inputValue} MW -> ${finalResult}`;
-                if (!calculationHistory.includes(historyEntry)) {
-                    calculationHistory.unshift(historyEntry); // Add to beginning
-                    if (calculationHistory.length > 10) {
-                        calculationHistory.pop(); // Keep only last 10
-                    }
-                    updateHistoryDisplay();
-                    saveHistory(); // Save to localStorage
-                }
-            }
-        }
 
-        function updateHistoryDisplay() {
-            if (calculationHistory.length === 0) {
-                historyList.innerHTML = '<div class="text-gray-400 text-sm text-center py-4">No calculations yet</div>';
-                return;
-            }
-            
-            historyList.innerHTML = calculationHistory.map(entry => 
-                `<div class="bg-gray-600 rounded px-3 py-2 text-white text-sm font-medium">${entry}</div>`
-            ).join('');
-        }
-
-        // Load saved history when page loads
-        loadHistory();
-
+         }
+        
         // Calculate as user types
         numberInput.addEventListener('input', calculate);
         
         // Focus on input when page loads
         numberInput.focus();
-
-        // History dropdown functionality
-        const historyDropdownBtn = document.getElementById('historyDropdownBtn');
-        const historyContent = document.getElementById('historyContent');
-        const historyDropdownArrow = document.getElementById('historyDropdownArrow');
-        let historyDropdownOpen = true; // Start open by default
-
-        function toggleHistoryDropdown() {
-            historyDropdownOpen = !historyDropdownOpen;
-            if (historyDropdownOpen) {
-                historyContent.style.maxHeight = historyContent.scrollHeight + 'px';
-                historyContent.style.opacity = '1';
-                historyContent.style.pointerEvents = 'auto';
-                historyDropdownArrow.classList.add('rotate-180');
-            } else {
-                historyContent.style.maxHeight = '0px';
-                historyContent.style.opacity = '0';
-                historyContent.style.pointerEvents = 'none';
-                historyDropdownArrow.classList.remove('rotate-180');
-            }
-        }
-
-        // Initialize history dropdown as open
-        historyContent.style.maxHeight = historyContent.scrollHeight + 'px';
-        historyDropdownArrow.classList.add('rotate-180');
-
-        historyDropdownBtn.addEventListener('click', toggleHistoryDropdown);
 
         // Patterns popup functionality
         const patternsBtn = document.getElementById('patternsBtn');
