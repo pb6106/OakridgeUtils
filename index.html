@@ -278,6 +278,13 @@
                 title: "Pre-Start Checklist",
                 sections: [
                     {
+                        title: "Initial Setup",
+                        items: [
+                            "Grab a bypass key from the key cabinet at the door of the Control Room",
+                            "Make sure everything is shut down and ready to go"
+                        ]
+                    },
+                    {
                         title: "1. Condenser Coolant Pumps",
                         items: [
                             "Condenser Coolant Pump A1 – Enabled",
@@ -352,7 +359,6 @@
                     {
                         title: "Initial Setup",
                         items: [
-                            "Grab a bypass key from the key cabinet at the door of the Control Room",
                             "Insert the key into the Autoscram panel and disable Autoscram",
                             "Enable Reactor Mode 1",
                             "Close Heat Exchanger A and B",
@@ -363,6 +369,7 @@
                             "Wait for the Out of Zone panel to flash, a bell will ring signalling the Shutdown Rods are fully removed",
                             "Enable Auto Control Rods",
                             "Type the numbers 1500 into the keypad next to the Auto Control Rods switch and click the grey button to set",
+                            "Start withdrawing control rods",
                             "Once the reactor reaches 1500 MW enable Reactor Mode 2. Keep an eye on the Core Heat Distribution",
                             "Enable Feedwater Pump 1 and set it to speed 2",
                             "Enable Condensate Pump 1 and set it to speed 2"
@@ -371,6 +378,7 @@
                     {
                         title: "Stage Two Startup",
                         items: [
+                            "Type the numbers 2100 into the keypad",
                             "Withdraw Control Rods until power reaches 2100 MW"
                         ]
                     },
@@ -380,8 +388,7 @@
                             "Call Engineering, click Turning gear, and disengage Turbine A",
                             "At the Turbine Panel enable the Synchronoscope for Turbine A",
                             "Reduce Turbine A bypass valve to around 20-30% at the Turbine Panel",
-                            "Slowly increase the Turbine Valve to around 60-70%",
-                            "The RPM should start rising, it should add 30 to the RPM every time it updates",
+                            "Slowly increase the Turbine Valve to around 60-70%, The RPM should start rising, it should add 30 to the RPM every time it updates",
                             "Open the Grid Sync cap",
                             "Once the RPM reaches around +1775 RPM the Synchronoscope will flash and make an audible sound when the needle passes over the black zone at the top of the gauge",
                             "Once the needle slows down and the RPM is around 1800, wait for the green light to light up and then click Grid Sync",
@@ -419,7 +426,7 @@
                             "Set Main Circulation Pumps A1 and A2 to speed 3",
                             "Enable Main Circulation Pump B1 and B2",
                             "Set Condenser Coolant Pumps A1 and A2 to speed 3",
-                            "Type the numbers 3000 into the Auto Control Rod panel and click the grey button",
+                            "Type the numbers 3000 into the keypad",
                             "Withdraw Control rods until power reaches 3000 MW, Keep an eye on Core Heat Distribution",
                             "Enable Condenser Coolant Pumps B1 and B2 and set to speed 3"
                         ]
@@ -439,7 +446,7 @@
                         ]
                     },
                     {
-                        title: "If Turbine B Sync is Unsuccessful",
+                        title: "If Sync is Unsuccessful",
                         items: [
                             "Click the Acknowledge button, the corresponding one to silence the Turbine Trip Alarm will be glowing",
                             "Wait for the RPM to drop below 600",
@@ -448,7 +455,7 @@
                         ]
                     },
                     {
-                        title: "If Turbine B Sync is Successful",
+                        title: "If Sync is Successful",
                         items: [
                             "Acknowledge the Reverse Power alert",
                             "Increase the Turbine Valve SLOWLY to 100%",
@@ -461,7 +468,7 @@
                     {
                         title: "Stage Four Startup",
                         items: [
-                            "Type into the Auto Control Rods keypad 4000 MW",
+                            "Type the numbers 4000 into the keypad",
                             "Set Main Circulation Pumps B1 and B2 to speed 3",
                             "Enable Condenser Coolant Pumps A3 and B3",
                             "Call the Grid Controller and click Go Online",
